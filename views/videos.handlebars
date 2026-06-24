@@ -1,0 +1,22 @@
+<h1>TikTok 2</h1>
+
+<a href="/criar">Criar vídeo</a>
+
+<hr>
+
+<ul>
+    {{#each videos}}
+        <li>
+            <h3>{{this.titulo}}</h3>
+            <p>{{this.descricao}}</p>
+            <a href="{{this.url}}" target="_blank">Assistir</a>
+
+            <a href="/editar/{{this.id}}">Editar</a>
+
+            <form action="/deletar/{{this.id}}" method="POST" style="display:inline;">
+                <button type="submit">Deletar</button>
+            </form>
+        </li>
+        <hr>
+    {{/each}}
+</ul>

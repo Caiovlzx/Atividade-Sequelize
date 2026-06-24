@@ -1,0 +1,9 @@
+<h1>Editar vídeo</h1>
+
+<form action="/editar/{{video.id}}" method="POST">
+    <input name="titulo" value="{{video.titulo}}">
+    <input name="descricao" value="{{video.descricao}}">
+    <input name="url" value="{{video.url}}">
+
+    <button type="submit">Atualizar</button>
+</form>
