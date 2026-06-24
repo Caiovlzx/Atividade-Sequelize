@@ -2,6 +2,10 @@ const express = require('express');
 const exphbs = require('express-handlebars');
 const app = express();
 
+app.engine('handlebars', exphbs.engine({defaultLayout:false}));
+app.set('view engine', 'handlebars');
+app.use(express.urlencoded({ extended: true }));
+
 const sequelize = require('./config/db')
 const Usuario = require('./models/usuario.models')
 const Produto = require('./models/produto.models')
@@ -75,6 +79,91 @@ app.get(
     }
 )
 
+app.get(
+    '/produtos',
+    async (req, res) => {
+        const produtos = await Produto.findAll({ raw: true });
+        res.json(produtos);
+    }
+)
+
+app.post(
+    '/prod',
+    async(req, res) => {
+        const {nome, preco} = req.body;
+        const prod = await Produto.create({nome,preco});
+        res.json(prod);
+    }
+)
+
+app.get(
+    '/produtos/:id',
+    async (req, res) => {
+        const { id } = req.params;
+        const produto = await Produto.findByPk(id);
+        await produto.destroy();
+        res.send('Produto excluído com sucesso!');
+    }
+)
+
+app.get(
+    '/usuarios',
+    async (req, res) => {
+        await Usuario.create({
+            nome: 'Caio',
+            email: 'caio@example.com',
+            idade: 25
+        });
+        await Usuario.create({
+            nome: 'Maria',
+            email: 'maria@example.com',
+            idade: 30
+        });
+        await Usuario.create({
+            nome: 'Elias',
+            email: 'elias@example.com',
+            idade: 28
+        });
+        res.send('Usuário criado com sucesso!')
+    }
+)
+
+app.get(
+    '/usuariolistar',
+    async (req, res) => {
+        const usuarios = await Usuario.findAll({raw: true});
+
+        res.render('usuarios', {usuarios});
+    }
+)
+
+app.get(
+    '/cadastrar-usu',
+    async (req, res) => {
+        res.render('cadastrarUsuario');
+    }
+);
+
+app.post(
+    '/cadastrar-usuario',
+    async (req, res) => {
+       const { nome, email, idade } = req.body;
+       await Usuario.create({ nome, email, idade });
+       res.redirect('/usuariolistar');
+    }
+);
+
+app.post('/usuarios/deletar/:id', async (req, res) => {
+    const { id } = req.params;
+
+    const usuario = await Usuario.findByPk(id);
+
+    if (usuario) {
+        await usuario.destroy();
+    }
+
+    res.redirect('/usuariolistar');
+});
 
 async function conectarBD() {
     try{
